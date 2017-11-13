@@ -1,5 +1,7 @@
 package cheesycoder.stateful;
 
+import cheesycoder.stateful.state.State;
+
 /**
  * Created by jinwo on 2017-11-12.
  */
@@ -15,5 +17,7 @@ public interface MainContract {
         void resolveState(MainState state);
         void startTyping(int charLength);
         void startDisplayingResult(String result);
+        void stop();
+        MainState getState();
     }
 }

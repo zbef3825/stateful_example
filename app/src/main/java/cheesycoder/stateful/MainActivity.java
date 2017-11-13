@@ -8,12 +8,17 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.TextView;
 
+import org.parceler.Parcels;
+
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View {
+
+    public static final String TAG = MainActivity.class.getName();
 
     @BindView(R.id.result_view)
     TextView resultView;
@@ -31,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     String initResult;
 
     MainContract.Presenter presenter;
+
+    Unbinder unbinder;
 
     private TextWatcher textChangeListener = new TextWatcher() {
         @Override
@@ -52,9 +59,19 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainState mainState = null;
+        if (savedInstanceState != null) {
+            mainState = Parcels.unwrap(savedInstanceState.getParcelable(TAG));
+        }
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        presenter = new MainPresenter(null, this);
+        unbinder = ButterKnife.bind(this);
+        presenter = new MainPresenter(mainState, this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(TAG, Parcels.wrap(presenter.getState()));
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -67,6 +84,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     protected void onPause() {
         messageField.removeTextChangedListener(textChangeListener);
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        presenter.stop();
+        unbinder.unbind();
+        super.onStop();
     }
 
     @Override
