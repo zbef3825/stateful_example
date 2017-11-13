@@ -59,12 +59,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        unbinder = ButterKnife.bind(this);
+
         MainState mainState = null;
         if (savedInstanceState != null) {
             mainState = Parcels.unwrap(savedInstanceState.getParcelable(TAG));
         }
-        setContentView(R.layout.activity_main);
-        unbinder = ButterKnife.bind(this);
         presenter = new MainPresenter(mainState, this);
     }
 

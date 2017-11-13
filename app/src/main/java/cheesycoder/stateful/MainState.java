@@ -2,6 +2,8 @@ package cheesycoder.stateful;
 
 import org.parceler.Parcel;
 
+import java.lang.ref.WeakReference;
+
 import cheesycoder.stateful.state.DisplayState;
 import cheesycoder.stateful.state.InitState;
 import cheesycoder.stateful.state.State;
@@ -18,7 +20,7 @@ public class MainState {
 
     State curState;
 
-    MainContract.Presenter presenter;
+    WeakReference<MainContract.Presenter> presenter;
 
     public MainState() {
     }
@@ -35,13 +37,21 @@ public class MainState {
     }
 
     public void setPresenter(MainContract.Presenter presenter) {
-        this.presenter = presenter;
-        presenter.resolveState(this);
+        if (presenter == null) throw new IllegalStateException("Presenter is null. It should not be null when setting Presenter");
+
+        this.presenter = new WeakReference<>(presenter);
+        if (this.presenter.get() != null) {
+            this.presenter.get().resolveState(this);
+        }
     }
 
     public void setState(State curState) {
         this.curState = curState;
-        presenter.resolveState(this);
+        if (presenter.get() != null) {
+            presenter.get().resolveState(this);
+        } else {
+            throw new IllegalStateException("Presenter is null. Did you forget to call setPresenter?");
+        }
     }
 
     public State getCurState() {
@@ -70,9 +80,5 @@ public class MainState {
 
     public void startDisplayingResult(String result) {
         curState.pressSend(result);
-    }
-
-    public void stop() {
-        presenter = null;
     }
 }
