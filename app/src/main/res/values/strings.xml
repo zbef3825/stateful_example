@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">StateFul</string>
+    <string name="user_typing">User is typing. Please Wait.</string>
+    <string name="result">Hello %1$s. Welcome to Testing</string>
+    <string name="init_result">Type Your Name</string>
+</resources>
